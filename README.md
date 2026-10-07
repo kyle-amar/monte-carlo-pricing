@@ -178,7 +178,7 @@ Possible extensions: calibration, rough volatility, deep hedging.
 
 Kyle Amar, M2 Probabilités et Finance (Sorbonne Université / École Polytechnique)
 
-- LinkedIn: [your-profile](https://www.linkedin.com/in/your-profile)
+- LinkedIn: [kyle-amar](https://www.linkedin.com/in/kyle-amar-4ab584428/)
 
 ## License
 
