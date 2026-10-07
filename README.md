@@ -169,8 +169,10 @@ The naive estimator misses barrier crossings between dates and overestimates the
 ## Roadmap
 
 - **Greeks**: delta, gamma and vega by finite differences with common random numbers, pathwise derivatives and the likelihood ratio method.
-- **Heston model**: stochastic volatility, discretization of the variance process (full truncation, QE scheme), calibration to the implied volatility smile.
-- **American options**: Longstaff-Schwartz regression, lower and upper bounds.
+- **Heston model**: stochastic volatility, discretization of the variance process (full truncation, QE scheme), validation against the semi-closed-form Fourier price.
+- **American options**: Longstaff-Schwartz regression, comparison with a binomial tree.
+
+Possible extensions: calibration, rough volatility, deep hedging.
 
 ## License
 
