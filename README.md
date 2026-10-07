@@ -2,7 +2,7 @@
 
 A Monte Carlo pricing engine for equity derivatives under Black-Scholes, written in Python with NumPy and SciPy.
 
-Every estimator is validated against a closed-form price: European calls and puts, geometric Asian calls and continuously monitored up-and-out calls. The project covers:
+Every method is validated on products with a closed-form price: European calls and puts, geometric Asian calls and continuously monitored up-and-out calls. The arithmetic Asian call, which has no closed form, is priced with the geometric one as a control variate. The project covers:
 
 - **Monte Carlo basics**: generic engine `mc_price(payoff, ...)`, standard errors, Student confidence intervals, $1/\sqrt{N}$ convergence, put-call parity.
 - **Variance reduction**: antithetic variates (with a proof that $\rho \le 0$ for monotone payoffs), optimal control variate, randomized quasi-Monte Carlo (Sobol + random shift), compared at equal budget.
