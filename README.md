@@ -174,6 +174,12 @@ The naive estimator misses barrier crossings between dates and overestimates the
 
 Possible extensions: calibration, rough volatility, deep hedging.
 
+## Author
+
+Kyle Amar, M2 Probabilités et Finance (Sorbonne Université / École Polytechnique)
+
+- LinkedIn: [your-profile](https://www.linkedin.com/in/your-profile)
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
