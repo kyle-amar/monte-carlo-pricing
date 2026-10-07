@@ -1,0 +1,5 @@
+numpy>=1.22
+scipy>=1.7        # scipy.stats.qmc (Sobol sequences)
+matplotlib>=3.5
+pytest>=7
+jupyter

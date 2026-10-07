@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific
+# Figures are versioned in figures/ only; any other generated image is ignored
+*.png
+!figures/*.png
+
+# Editors
+.vscode/
+.idea/
