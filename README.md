@@ -9,6 +9,8 @@ Every method is validated on products with a closed-form price: European calls a
 - **Path simulation**: Euler and Milstein schemes (strong and weak error), exact paths, Brownian bridge construction.
 - **Exotic options**: arithmetic Asian calls (geometric control variate, QMC with Brownian bridge) and up-and-out barrier calls (Broadie-Glasserman-Kou and Brownian-bridge corrections of the discrete monitoring bias).
 
+The `mcpricing` package contains the reusable code; the notebooks below contain the derivations and experiments.
+
 ## Notebooks
 
 The notebooks (in French) contain the derivations, proofs and numerical experiments behind the package. Each one can also be viewed on nbviewer, which renders formulas and figures more reliably than GitHub.
