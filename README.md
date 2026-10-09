@@ -9,7 +9,13 @@ Every method is validated on products with a closed-form price: European calls a
 - **Path simulation**: Euler and Milstein schemes (strong and weak error), exact paths, Brownian bridge construction.
 - **Exotic options**: arithmetic Asian calls (geometric control variate, QMC with Brownian bridge) and up-and-out barrier calls (Broadie-Glasserman-Kou and Brownian-bridge corrections of the discrete monitoring bias).
 
-The notebooks (in French) contain the derivations and the numerical experiments; the `mcpricing` package contains the reusable code.
+## Notebooks
+
+The notebooks (in French) contain the derivations, proofs and numerical experiments behind the package. Each one can also be viewed on nbviewer, which renders formulas and figures more reliably than GitHub.
+
+- **Step 1, Monte Carlo under Black-Scholes** ([notebook](notebooks/etape1_mc_black_scholes.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape1_mc_black_scholes.ipynb)): generic engine, confidence intervals, $1/\sqrt{N}$ convergence, put-call parity, cost of accuracy.
+- **Step 2, Variance reduction** ([notebook](notebooks/etape2_reduction_variance.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape2_reduction_variance.ipynb)): antithetic variates (with the proof that $\rho \le 0$ for monotone payoffs), optimal control variate, randomized QMC, comparison at equal budget.
+- **Step 3, Path simulation and exotic options** ([notebook](notebooks/etape3_trajectoires_exotiques.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape3_trajectoires_exotiques.ipynb)): Euler and Milstein schemes (strong and weak error), Asian options with geometric control variate and Brownian bridge QMC, barrier options with BGK and Brownian bridge corrections.
 
 ## Project structure
 
