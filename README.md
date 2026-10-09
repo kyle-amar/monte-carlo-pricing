@@ -71,7 +71,7 @@ The suite (32 tests, about 3 seconds) checks:
 
 - convergence of `mc_price` to the Black-Scholes price, and the $1/\sqrt N$ decay of the standard error;
 - put-call parity, for the closed forms (to $10^{-10}$) and for Monte Carlo;
-- the Student quantile used by `summarize` ($t_{15} \approx 2.131$ for 16 samples, $\to 1.96$ for large samples);
+- the Student quantile used by `summarize` ($`t_{15} \approx 2.131`$ for 16 samples, $\to 1.96$ for large samples);
 - $\rho \le 0$ for antithetic calls and puts, and $\rho = 1$ for a payoff even in $Z$;
 - unbiasedness of the antithetic, control variate and randomized QMC estimators;
 - the geometric Asian closed form against Monte Carlo;
@@ -90,7 +90,7 @@ The script rebuilds the figures in `figures/` with the `mcpricing` package, usin
 
 ## Main results
 
-Parameters throughout: $S_0 = 100$, $K = 100$, $T = 1$, $r = 3\%$, $\sigma = 20\%$.
+Parameters throughout: $`S_0 = 100`$, $K = 100$, $T = 1$, $r = 3\%$, $\sigma = 20\%$.
 
 ### European call: convergence
 
@@ -107,13 +107,13 @@ Dividing the error by 10 costs 100 times more simulations: this is what motivate
 
 ### Variance reduction at equal budget
 
-ATM call, $N = 2^{18}$ payoff evaluations per method. The variance reduction factor is $\mathrm{Var}_{\text{standard}} / \mathrm{Var}_{\text{method}}$, i.e. how many times fewer simulations are needed for the same accuracy.
+ATM call, $N = 2^{18}$ payoff evaluations per method. The variance reduction factor is $`\mathrm{Var}_{\text{standard}} / \mathrm{Var}_{\text{method}}`$, i.e. how many times fewer simulations are needed for the same accuracy.
 
 | Method | Price | Std. error | Variance reduction |
 |---|---:|---:|---:|
 | Standard | 9.41805 | 0.02769 | 1.0 |
 | Antithetic | 9.43491 | 0.02068 | 1.8 |
-| Control variate ($e^{-rT} S_T$) | 9.41806 | 0.01136 | 5.9 |
+| Control variate ($`e^{-rT} S_T`$) | 9.41806 | 0.01136 | 5.9 |
 | Randomized QMC (16 × $2^{14}$ Sobol points) | 9.41213 | 0.00064 | 1855 |
 
 The gains depend strongly on moneyness (call, variance reduction factor):
@@ -132,7 +132,7 @@ Antithetic correlation $\rho = \mathrm{Corr}(g(Z), g(-Z))$: $-0.445$ for the ATM
 
 ### Discretization schemes
 
-Strong error $\mathbb E|\hat S_T - S_T|$ against the exact solution with the same Brownian increments: order $1/2$ for Euler, order $1$ for Milstein (at $n = 256$ steps: 0.145 vs 0.0022). The weak error, which drives the pricing bias, is of order $1$ for both schemes.
+Strong error $`\mathbb E|\hat S_T - S_T|`$ against the exact solution with the same Brownian increments: order $1/2$ for Euler, order $1$ for Milstein (at $n = 256$ steps: 0.145 vs 0.0022). The weak error, which drives the pricing bias, is of order $1$ for both schemes.
 
 ### Arithmetic Asian call
 
