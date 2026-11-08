@@ -8,6 +8,7 @@ Every method is validated on products with a closed-form price: European calls a
 - **Variance reduction**: antithetic variates (with a proof that $\rho \le 0$ for monotone payoffs), optimal control variate, randomized quasi-Monte Carlo (Sobol + random shift), compared at equal budget.
 - **Path simulation**: Euler and Milstein schemes (strong and weak error), exact paths, Brownian bridge construction.
 - **Exotic options**: arithmetic Asian calls (geometric control variate, QMC with Brownian bridge) and up-and-out barrier calls (Broadie-Glasserman-Kou and Brownian-bridge corrections of the discrete monitoring bias).
+- **Greeks**: delta, gamma and vega by finite differences with common random numbers, pathwise derivatives, the likelihood ratio method and a mixed estimator of the gamma, validated against the closed-form Black-Scholes Greeks; delta of a digital option and of an arithmetic Asian call.
 
 The `mcpricing` package contains the reusable code.
 
@@ -18,22 +19,25 @@ The notebooks (in French) contain the derivations, proofs and numerical experime
 - **Step 1, Monte Carlo under Black-Scholes** ([notebook](notebooks/etape1_mc_black_scholes.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape1_mc_black_scholes.ipynb)): generic engine, confidence intervals, $1/\sqrt{N}$ convergence, put-call parity, cost of accuracy.
 - **Step 2, Variance reduction** ([notebook](notebooks/etape2_reduction_variance.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape2_reduction_variance.ipynb)): antithetic variates (with the proof that $\rho \le 0$ for monotone payoffs), optimal control variate, randomized QMC, comparison at equal budget.
 - **Step 3, Path simulation and exotic options** ([notebook](notebooks/etape3_trajectoires_exotiques.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape3_trajectoires_exotiques.ipynb)): Euler and Milstein schemes (strong and weak error), Asian options with geometric control variate and Brownian bridge QMC, barrier options with BGK and Brownian bridge corrections.
+- **Step 4, Greeks** ([notebook](notebooks/etape4_grecques.ipynb), [nbviewer](https://nbviewer.org/github/kyle-amar/monte-carlo-pricing/blob/main/notebooks/etape4_grecques.ipynb)): finite differences (choice of the step, common random numbers), pathwise and likelihood ratio methods, mixed gamma estimator, comparison at equal budget, digital option, delta of an arithmetic Asian call.
 
 ## Project structure
 
 ```
 monte-carlo-pricing/
 ├── mcpricing/                  # the package
-│   ├── payoffs.py              # call and put payoffs
-│   ├── closed_form.py          # Black-Scholes, geometric Asian, up-and-out call
+│   ├── payoffs.py              # call, put and digital payoffs
+│   ├── closed_form.py          # Black-Scholes prices and Greeks, digital, geometric Asian, up-and-out call
 │   ├── simulation.py           # S_T, exact paths, Brownian bridge, Euler and Milstein schemes
 │   ├── engine.py               # summarize (Student CI) and the generic mc_price engine
 │   ├── variance_reduction.py   # antithetic, control variate, randomized QMC
-│   └── exotics.py              # Asian payoffs, QMC for Asians, barrier estimators
+│   ├── exotics.py              # Asian payoffs, QMC for Asians, barrier estimators
+│   └── greeks.py               # finite differences, pathwise, likelihood ratio, mixed gamma, Asian delta
 ├── notebooks/
 │   ├── etape1_mc_black_scholes.ipynb        # step 1: European options, convergence, parity
 │   ├── etape2_reduction_variance.ipynb      # step 2: variance reduction
-│   └── etape3_trajectoires_exotiques.ipynb  # step 3: discretization schemes, Asian and barrier options
+│   ├── etape3_trajectoires_exotiques.ipynb  # step 3: discretization schemes, Asian and barrier options
+│   └── etape4_grecques.ipynb                # step 4: Greeks by Monte Carlo
 ├── tests/                      # pytest suite
 ├── scripts/
 │   └── make_figures.py         # regenerates the README figures (English labels)
@@ -42,7 +46,7 @@ monte-carlo-pricing/
 └── requirements.txt
 ```
 
-The modules depend on each other in one direction only: `payoffs`, `closed_form` and `simulation` are the building blocks, `engine` builds on `simulation`, and `variance_reduction` and `exotics` build on both.
+The modules depend on each other in one direction only: `payoffs`, `closed_form` and `simulation` are the building blocks, `engine` builds on `simulation`, and `variance_reduction`, `exotics` and `greeks` build on both.
 
 ## Installation
 
@@ -75,7 +79,7 @@ Every estimator returns the same triple `(price, standard error, confidence inte
 pytest
 ```
 
-The suite (32 tests, about 3 seconds) checks:
+The suite (46 tests, about 3 seconds) checks:
 
 - convergence of `mc_price` to the Black-Scholes price, and the $1/\sqrt N$ decay of the standard error;
 - put-call parity, for the closed forms (to $10^{-10}$) and for Monte Carlo;
@@ -84,7 +88,10 @@ The suite (32 tests, about 3 seconds) checks:
 - unbiasedness of the antithetic, control variate and randomized QMC estimators;
 - the geometric Asian closed form against Monte Carlo;
 - the Brownian-bridge barrier estimator against the closed form, with 4 and 52 monitoring dates;
-- the upward bias of the naive barrier estimator, and the covariance of the Brownian bridge.
+- the upward bias of the naive barrier estimator, and the covariance of the Brownian bridge;
+- the closed-form Greeks (call delta, gamma, vega and digital delta) against central differences of the closed-form prices;
+- the pathwise delta and vega, the likelihood ratio delta, gamma and vega, the mixed gamma and the finite differences with common random numbers, against the closed-form Greeks;
+- the pathwise gamma of the call, exactly zero, and the likelihood ratio delta of the digital option against its closed form.
 
 Seeds are fixed, so the tests are deterministic. A Monte Carlo estimate passes if it lies within 4 standard errors of the exact value: with any other seed, a correct estimator would fail with probability about $6 \times 10^{-5}$.
 
@@ -174,9 +181,24 @@ The naive estimator misses barrier crossings between dates and overestimates the
 
 ![Discrete monitoring bias and corrections](figures/barrier_monitoring_bias.png)
 
+### Greeks
+
+ATM call, $N = 500{,}000$ paths per method, standard errors in parentheses. Finite differences use common random numbers, with $h = 1$ for the delta and the gamma and $h = 0.01$ for the vega. The pathwise gamma is identically zero (the derivative of $`\mathbf 1_{\{S_T > K\}}`$ vanishes almost everywhere), so the pathwise column shows the mixed estimator for the gamma (pathwise once, then likelihood ratio once).
+
+| Greek | Closed form | Finite differences | Pathwise | Likelihood ratio |
+|---|---:|---:|---:|---:|
+| Delta | 0.59871 | 0.59812 (0.00082) | 0.59838 (0.00083) | 0.60004 (0.00202) |
+| Gamma | 0.01933 | 0.01937 (0.00016) | 0.01935 (0.00005) (mixed) | 0.01960 (0.00019) |
+| Vega | 38.6668 | 38.6939 (0.1063) | 38.6933 (0.1063) | 39.1920 (0.3890) |
+
+Variance ratio against the pathwise method: 0.98 (finite differences) and 5.93 (likelihood ratio) for the delta, 1.00 and 13.40 for the vega. With independent draws instead of common random numbers, the standard error of the finite-difference delta grows like $1/h$.
+
+On a digital option paying $`\mathbf 1_{\{S_T > K\}}`$ (exact delta 0.019333), the pathwise estimator returns 0, while the likelihood ratio method, which never differentiates the payoff, gives 0.019330 (0.000040). Finite differences get noisy as $h \to 0$ (0.019215 (0.001365) for $h = 0.01$).
+
+For the arithmetic Asian call (12 dates, 200,000 paths, no closed form), the three methods agree: delta 0.56430 (0.00121) pathwise, 0.56660 (0.00450) likelihood ratio, 0.56411 (0.00120) by finite differences.
+
 ## Roadmap
 
-- **Greeks**: delta, gamma and vega by finite differences with common random numbers, pathwise derivatives and the likelihood ratio method.
 - **Heston model**: stochastic volatility, discretization of the variance process (full truncation, QE scheme), validation against the semi-closed-form Fourier price.
 - **American options**: Longstaff-Schwartz regression, comparison with a binomial tree.
 
