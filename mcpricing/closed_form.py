@@ -1,4 +1,4 @@
-"""Closed-form prices under Black-Scholes, used as references for the Monte Carlo estimators."""
+"""Closed-form prices and Greeks under Black-Scholes, used as references for the Monte Carlo estimators."""
 
 import numpy as np
 from scipy.stats import norm
@@ -21,6 +21,36 @@ def bs_put_price(S0, K, T, r, sigma):
     """European put: P = K e^{-rT} N(-d2) - S0 N(-d1)."""
     d1, d2 = _d1_d2(S0, K, T, r, sigma)
     return K * np.exp(-r * T) * norm.cdf(-d2) - S0 * norm.cdf(-d1)
+
+
+def bs_call_delta(S0, K, T, r, sigma):
+    """Call delta: dC/dS0 = N(d1)."""
+    d1, _ = _d1_d2(S0, K, T, r, sigma)
+    return norm.cdf(d1)
+
+
+def bs_call_gamma(S0, K, T, r, sigma):
+    """Call gamma: d^2C/dS0^2 = phi(d1) / (S0 sigma sqrt(T))."""
+    d1, _ = _d1_d2(S0, K, T, r, sigma)
+    return norm.pdf(d1) / (S0 * sigma * np.sqrt(T))
+
+
+def bs_call_vega(S0, K, T, r, sigma):
+    """Call vega: dC/dsigma = S0 phi(d1) sqrt(T)."""
+    d1, _ = _d1_d2(S0, K, T, r, sigma)
+    return S0 * norm.pdf(d1) * np.sqrt(T)
+
+
+def digital_price(S0, K, T, r, sigma):
+    """Cash-or-nothing digital call, paying 1 if S_T > K: e^{-rT} N(d2)."""
+    _, d2 = _d1_d2(S0, K, T, r, sigma)
+    return np.exp(-r * T) * norm.cdf(d2)
+
+
+def digital_delta(S0, K, T, r, sigma):
+    """Digital call delta: e^{-rT} phi(d2) / (S0 sigma sqrt(T))."""
+    _, d2 = _d1_d2(S0, K, T, r, sigma)
+    return np.exp(-r * T) * norm.pdf(d2) / (S0 * sigma * np.sqrt(T))
 
 
 def geometric_asian_call(S0, K, T, r, sigma, n):
