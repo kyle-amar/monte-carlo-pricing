@@ -197,6 +197,10 @@ On a digital option paying $`\mathbf 1_{\{S_T > K\}}`$ (exact delta 0.019333), t
 
 For the arithmetic Asian call (12 dates, 200,000 paths, no closed form), the three methods agree: delta 0.56430 (0.00121) pathwise, 0.56660 (0.00450) likelihood ratio, 0.56411 (0.00120) by finite differences.
 
+![Standard error of the finite-difference delta as a function of the step](figures/greeks_fd_step.png)
+
+With independent draws the standard error grows like 1/h; common random numbers remove this blow-up for the call, but not for the discontinuous digital payoff, where it still grows like 1/√h and the likelihood ratio method is preferable.
+
 ## Roadmap
 
 - **Heston model**: stochastic volatility, discretization of the variance process (full truncation, QE scheme), validation against the semi-closed-form Fourier price.

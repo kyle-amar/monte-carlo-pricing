@@ -15,10 +15,15 @@ import numpy as np
 from mcpricing import (
     barrier_mc,
     call_payoff,
+    digital_delta,
+    digital_payoff,
+    fd_delta,
+    lr_greeks,
     mc_antithetic,
     mc_control_variate,
     mc_price,
     mc_qmc,
+    pathwise_greeks,
     put_payoff,
     up_and_out_call,
 )
@@ -126,9 +131,46 @@ def barrier_monitoring_bias():
     save("barrier_monitoring_bias.png")
 
 
+def greeks_fd_step():
+    N, seed = 500_000, 42
+    h = np.logspace(-2, 1, 10)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.8))
+
+    # Left: ATM call, independent draws vs common random numbers
+    se_ind = np.array([fd_delta(call_payoff, **PARAMS, h=s, n_paths=N, seed=seed, common=False)[1] for s in h])
+    se_crn = np.array([fd_delta(call_payoff, **PARAMS, h=s, n_paths=N, seed=seed, common=True)[1] for s in h])
+    se_pw = pathwise_greeks(**PARAMS, n_paths=N, seed=seed)["delta"][1]
+    se_lr = lr_greeks(call_payoff, **PARAMS, n_paths=N, seed=seed)["delta"][1]
+    ax1.loglog(h, se_ind, "o-", label="Finite differences, independent draws")
+    ax1.loglog(h, se_crn, "s-", label="Finite differences, common random numbers")
+    ax1.axhline(se_pw, color="C2", ls="--", label="Pathwise")
+    ax1.axhline(se_lr, color="C3", ls=":", label="Likelihood ratio")
+    ax1.loglog(h, 2.5 * se_ind[0] * h[0] / h, color="grey", lw=0.8, label="slope -1 (∝ 1/h)")   # shifted up to stay visible
+    ax1.set_title("ATM call delta: standard error vs step (N = 500,000)")
+
+    # Right: digital option, common random numbers
+    se_dig = np.array([fd_delta(digital_payoff, **PARAMS, h=s, n_paths=N, seed=seed, common=True)[1] for s in h])
+    se_lr_dig = lr_greeks(digital_payoff, **PARAMS, n_paths=N, seed=seed)["delta"][1]
+    ax2.loglog(h, se_dig, "s-", color="C1", label="Finite differences, common random numbers")
+    ax2.loglog(h, 2.5 * se_dig[0] * np.sqrt(h[0] / h), color="grey", lw=0.8, label="slope -1/2 (∝ 1/√h)")
+    ax2.axhline(se_lr_dig, color="C3", ls=":", label="Likelihood ratio")
+    ax2.text(0.03, 0.2, f"Pathwise: estimate identically 0 (exact delta {digital_delta(**PARAMS):.4f})",
+             transform=ax2.transAxes)
+    ax2.set_title("Digital option delta: standard error vs step")
+
+    for ax in (ax1, ax2):
+        ax.set_xlabel("Step h")
+        ax.set_ylabel("Standard error of the delta")
+        ax.legend()
+        ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    save("greeks_fd_step.png")
+
+
 if __name__ == "__main__":
     FIGURES.mkdir(exist_ok=True)
     mc_convergence_call_put()
     variance_reduction_by_strike()
     convergence_by_method()
     barrier_monitoring_bias()
+    greeks_fd_step()
